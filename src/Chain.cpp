@@ -5,16 +5,22 @@ using namespace std;
 
 Chain::Chain()
 {
+    _difficulty = 0;
     _length = 0;
     cout << _length;
-    _current_block = new Block(nullptr, nullptr, 0); // create genesis block
+    _current_block = new Block(nullptr, "Genesis Block", _difficulty);
     _genesis_block = _current_block;
     _length++;
 }
 
-void Chain::append_data(const uint8_t *data, uint8_t size)
+void Chain::set_difficulty(int difficulty)
 {
-    Block *new_block = new Block(_current_block, data, size);
+    _difficulty = difficulty;
+}
+
+void Chain::append_data(string data)
+{
+    Block *new_block = new Block(_current_block, data, _difficulty);
     _current_block = new_block;
     _length++;
 }
@@ -26,9 +32,8 @@ void Chain::print_chain() const
     for (int i = 0; i < _length; i++)
     {
 
-        cout << "block : " << i << endl;
-        cout << temp->get_hash_str() << endl;
-        temp = temp->get_next_block();
+        // cout << "block : " << i << endl;
+        // temp = temp->get_next_block();
     }
 }
 

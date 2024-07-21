@@ -8,12 +8,14 @@ class Chain
 {
 private:
     uint8_t _length;
+    uint8_t _difficulty;
     Block *_current_block;
     Block *_genesis_block;
 
 public:
     Chain();
-    void append_data(const uint8_t *data, uint8_t size);
+    void set_difficulty(int difficulty);
+    void append_data(std::string data);
     void print_chain() const;
     ~Chain();
 };

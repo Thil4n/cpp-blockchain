@@ -1,41 +1,35 @@
 #include "Block.h"
+#include "sha256.h"
 #include <unistd.h>
-
-#include <iostream>
 
 using namespace std;
 
-Block::Block(Block *prev_block, const uint8_t *data, uint8_t data_size)
+Block::Block(Block *prev_block, string data, int difficulty)
 
 {
 
-    _data_size = data_size;
     _next_block = nullptr;
 
-    if (prev_block == NULL) // This is genesis block
-    {
-        memset(_prev_hash, 0, SHA256_DIGEST_LENGTH); // set _prev_hash to null
-    }
-    else
+    if (prev_block != NULL)
+
     {
         // Copy previous block's hash to _prev_hash
-        memcpy(_prev_hash, prev_block->get_hash(), SHA256_DIGEST_LENGTH);
+        _prev_hash = prev_block->get_hash();
         prev_block->set_next_block(this);
     }
 
-    _data = new uint8_t[data_size];
-    memcpy(_data, data, data_size);
+    _data = data;
 
     calculate_hash();
-    mine_block();
+    mine_block(difficulty);
 }
 
-uint8_t *Block::get_hash()
+string Block::get_hash()
 {
     return _hash;
 }
 
-const uint8_t *Block::get_prev_hash()
+string Block::get_prev_hash()
 {
     return _prev_hash;
 }
@@ -50,67 +44,35 @@ Block *Block::get_next_block()
     return _next_block;
 }
 
-void Block::calculate_hash()
+inline string Block::calculate_hash()
 {
-    uint32_t sz = SHA256_DIGEST_LENGTH + _data_size + sizeof(uint8_t);
-    uint8_t *buf = new uint8_t[sz];
-    uint8_t *ptr = buf;
+    stringstream ss;
+    ss << _prev_hash << _data << _nonce;
 
-    memcpy(ptr, _prev_hash, SHA256_DIGEST_LENGTH);
-    ptr += SHA256_DIGEST_LENGTH;
-
-    if (_data_size != 0)
-    {
-        memcpy(ptr, _data, _data_size);
-    }
-
-    memcpy(ptr, &_nonce, sizeof(uint32_t));
-    ptr += sizeof(uint32_t);
-
-    SHA256_CTX sha256;
-    SHA256_Init(&sha256);
-    SHA256_Update(&sha256, buf, sz);
-    SHA256_Final(_hash, &sha256);
-
-    delete[] buf;
+    return sha256(ss.str());
 }
 
-char *Block::get_hash_str()
+void Block::mine_block(uint32_t difficulty)
 {
-    char *buf = new char[SHA256_DIGEST_LENGTH * 2 + 1];
-    for (uint32_t n = 0; n < SHA256_DIGEST_LENGTH; n++)
+    char cstr[difficulty + 1];
+    for (uint32_t i = 0; i < difficulty; ++i)
     {
-        sprintf(buf + n * 2, "%02x", _hash[n]);
+        cstr[i] = '0';
     }
-    buf[SHA256_DIGEST_LENGTH * 2] = 0;
-    return buf;
-}
+    cstr[difficulty] = '\0';
 
-bool Block::is_difficulty()
-{
-    cout << get_hash_str()[0] << endl;
+    string str(cstr);
 
-    for (uint8_t n = 0; n < 1; n++)
-    {
-        if (get_hash_str()[n] != 60)
-            return false;
-    }
-    return true;
-}
-
-void Block::mine_block()
-{
-    _nonce = 0;
-
-    while (!is_difficulty())
+    do
     {
         _nonce++;
-        calculate_hash();
-        usleep(10);
-    }
+        _hash = calculate_hash();
+
+    } while (_hash.substr(0, difficulty) != str);
+
+    cout << "Block mined: " << _hash << endl;
 }
 
 Block::~Block()
 {
-    delete[] _data;
 }

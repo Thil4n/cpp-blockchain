@@ -1,37 +1,34 @@
 #ifndef BLOCK_H_INCLUDED
 #define BLOCK_H_INCLUDED
 
-#include <openssl/sha.h>
 #include <cstdint>
-#include <cstring>
-#include <cstdio>
+#include <iostream>
+#include <sstream>
 
 class Block
 {
 private:
-    uint8_t _hash[SHA256_DIGEST_LENGTH];
-    uint8_t _prev_hash[SHA256_DIGEST_LENGTH];
+    std::string _hash;
+    std::string _prev_hash;
 
-    uint8_t *_data;
-    uint8_t _data_size;
+    std::string _data;
 
     uint8_t _nonce;
 
     Block *_next_block;
 
 public:
-    Block(Block *_prev_block, const uint8_t *data, uint8_t data_size);
+    Block(Block *_prev_block, std::string data, int difficulty);
 
-    uint8_t *get_hash();
-    const uint8_t *get_prev_hash();
+    std::string get_hash();
+    std::string get_prev_hash();
 
     Block *get_next_block();
     void set_next_block(Block *next_block);
 
-    void calculate_hash();
-    char *get_hash_str();
+    std::string calculate_hash();
     bool is_difficulty();
-    void mine_block();
+    void mine_block(uint32_t difficulty);
 
     ~Block();
 };
