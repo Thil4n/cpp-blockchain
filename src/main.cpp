@@ -1,19 +1,22 @@
-#include <iostream>
 #include "Chain.h"
 
-using namespace std;
+#include <iostream>
 
-int main(int argc, char const *argv[])
+int main()
 {
-    Chain new_chain = Chain();
-    new_chain.set_difficulty(1);
 
-    new_chain.append_data("hello");
-    new_chain.append_data("sdf");
-    new_chain.append_data("hello");
-    new_chain.append_data("hello");
+    Chain chain;
+    chain.set_difficulty(1);
 
-    new_chain.print_chain();
+    chain.append_data("Block 1 Data");
+    chain.append_data("Block 2 Data");
+
+    chain.save_chain("blockchain.dat");
+
+    Chain loaded_chain;
+    loaded_chain.load_chain("blockchain.dat");
+
+    loaded_chain.print_chain();
 
     return 0;
 }

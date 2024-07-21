@@ -6,7 +6,7 @@
 # Compiler settings - Can be customized.
 CC = g++
 CXXFLAGS = -std=c++11 -Wall
-LDFLAGS = -L/opt/homebrew/Cellar/openssl@3/3.2.1/lib -lssl -lcrypto
+# LDFLAGS = -L/opt/homebrew/Cellar/openssl@3/3.2.1/lib -lssl -lcrypto
 
 # Makefile settings - Can be customized.
 APPNAME = myapp

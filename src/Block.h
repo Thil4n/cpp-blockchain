@@ -1,36 +1,36 @@
-#ifndef BLOCK_H_INCLUDED
-#define BLOCK_H_INCLUDED
+#ifndef BLOCK_H
+#define BLOCK_H
 
-#include <cstdint>
-#include <iostream>
+#include <string>
 #include <sstream>
+#include <cstdint>
+#include <fstream>
 
 class Block
 {
-private:
-    std::string _hash;
-    std::string _prev_hash;
-
-    std::string _data;
-
-    uint8_t _nonce;
-
-    Block *_next_block;
-
 public:
-    Block(Block *_prev_block, std::string data, int difficulty);
+    Block(Block *prev_block, const std::string &data, int difficulty);
+    Block(std::ifstream &is, Block *prev_block);
+    ~Block();
 
-    std::string get_hash();
-    std::string get_prev_hash();
-
-    Block *get_next_block();
+    std::string get_data() const;
+    std::string get_hash() const;
+    std::string get_prev_hash() const;
+    Block *get_next_block() const;
     void set_next_block(Block *next_block);
 
-    std::string calculate_hash();
-    bool is_difficulty();
-    void mine_block(uint32_t difficulty);
+    void serialize(std::ofstream &os) const;
+    static Block *deserialize(std::ifstream &is, Block *prev_block);
 
-    ~Block();
+private:
+    std::string _data;
+    std::string _hash;
+    std::string _prev_hash;
+    Block *_next_block;
+    uint32_t _nonce;
+
+    std::string calculate_hash();
+    void mine_block(uint32_t difficulty);
 };
 
-#endif // BLOCK_H_INCLUDED
+#endif

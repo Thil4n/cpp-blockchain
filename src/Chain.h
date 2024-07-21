@@ -1,23 +1,28 @@
-#ifndef CHAIN_H_INCLUDED
-#define CHAIN_H_INCLUDED
+#ifndef CHAIN_H
+#define CHAIN_H
 
 #include "Block.h"
-#include <cstdint>
+#include <string>
 
 class Chain
 {
-private:
-    uint8_t _length;
-    uint8_t _difficulty;
-    Block *_current_block;
-    Block *_genesis_block;
-
 public:
     Chain();
-    void set_difficulty(int difficulty);
-    void append_data(std::string data);
-    void print_chain() const;
     ~Chain();
+
+    void set_difficulty(int difficulty);
+    void append_data(const std::string &data);
+    void print_chain() const;
+    void save_chain(const std::string &filename) const;
+    void load_chain(const std::string &filename);
+
+private:
+    Block *_genesis_block;
+    Block *_current_block;
+    int _difficulty;
+    int _length;
+
+    void create_genesis_block();
 };
 
-#endif // CHAIN_H_INCLUDED
+#endif
